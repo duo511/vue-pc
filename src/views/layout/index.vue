@@ -1,35 +1,35 @@
 <template>
-  <div class="layout-container">
+  <div class="layout">
     <el-container>
       <el-aside :width="isCollapse ? '64px': '200px' ">
         <div class="logo" :class="{minLogo: isCollapse}"></div>
         <!-- 左侧导航 -->
-        <el-menu  :collapse='isCollapse' :collapse-transition="false"  background-color="#002033" text-color="#fff" active-text-color="#ffd04b">
-          <el-menu-item index="1">
+        <el-menu :default-active='$route.path' router :collapse='isCollapse' :collapse-transition="false"  background-color="#002033" text-color="#fff" active-text-color="#ffd04b">
+          <el-menu-item index="/">
             <i class="el-icon-s-home"></i>
             <span slot="title">首页</span>
           </el-menu-item>
-          <el-menu-item index="2">
+          <el-menu-item index="/articles">
             <i class="el-icon-document"></i>
             <span slot="title">内容管理</span>
           </el-menu-item>
-          <el-menu-item index="3">
+          <el-menu-item index="/pictures">
             <i class="el-icon-picture"></i>
             <span slot="title">素材管理</span>
           </el-menu-item>
-          <el-menu-item index="4">
+          <el-menu-item index="/add-article">
             <i class="el-icon-s-promotion"></i>
             <span slot="title">发布文章</span>
           </el-menu-item>
-          <el-menu-item index="5">
+          <el-menu-item index="/comment">
             <i class="el-icon-chat-dot-round"></i>
             <span slot="title">评论管理</span>
           </el-menu-item>
-          <el-menu-item index="6">
+          <el-menu-item index="/fans">
             <i class="el-icon-setting"></i>
             <span slot="title">粉丝管理</span>
           </el-menu-item>
-          <el-menu-item index="7">
+          <el-menu-item index="/settings">
             <i class="el-icon-setting"></i>
             <span slot="title">个人设置</span>
           </el-menu-item>
@@ -48,12 +48,13 @@
               <i class="el-icon-arrow-down"></i>
             </div>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>设置</el-dropdown-item>
-              <el-dropdown-item>退出</el-dropdown-item>
+              <el-dropdown-item @click.native="$router.push('/settings')">设置</el-dropdown-item>
+              <el-dropdown-item @click.native="logout">退出</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-header>
         <el-main>
+          <router-view></router-view>
         </el-main>
       </el-container>
     </el-container>
@@ -62,6 +63,7 @@
 
 <script>
 import { reqGetUserInfo } from '@/api/user.js'
+import { delUser } from '@/utils/storage.js'
 export default {
   name: 'Layout',
   data () {
@@ -71,15 +73,32 @@ export default {
     }
   },
   created () {
+    this.$eventBus.$on('update_user_name', newName => {
+      this.user.name = newName
+    })
+    this.$eventBus.$on('update_user_photo', newphoto => {
+      this.user.photo = newphoto
+    })
     reqGetUserInfo().then(res => {
       this.user = res.data.data
     })
+  },
+  methods: {
+    logout () {
+      this.$confirm('你确定要退出系统吗?', '温馨提示', {
+        type: 'warning'
+      }).then(() => {
+        delUser()
+        this.$router.push('/login')
+      }).catch(() => {
+      })
+    }
   }
 }
 </script>
 
 <style lang='less'>
-.layout-container {
+.layout {
   width: 100%;
   height: 100%;
   position: fixed;
@@ -88,6 +107,7 @@ export default {
     height: 100%;
     .el-aside {
       background-color:#002033;
+      transition: 500ms;
       .el-menu {
         border-right: none;
       }

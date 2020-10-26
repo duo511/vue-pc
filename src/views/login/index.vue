@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="login">
     <div class="login-form-wrap">
 
       <div class="logo-head">
@@ -30,7 +30,7 @@
 
 <script>
 import { reqUserLogin } from '@/api/user.js'
-import { setUser } from '@/api/storage.js'
+import { setUser } from '@/utils/storage.js'
 export default {
   name: 'Login',
   data () {
@@ -84,7 +84,7 @@ export default {
 </script>
 
 <style lang='less'>
-.login-container {
+.login {
   position: fixed;
   left: 0;
   top: 0;
